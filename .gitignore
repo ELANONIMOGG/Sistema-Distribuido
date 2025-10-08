@@ -1,0 +1,22 @@
+Entorno/
+.env.example
+# Cachés y artefactos de Python
+__pycache__/
+*.py[cod]
+
+# Bases de datos locales
+*.db
+*.sqlite*
+
+# Archivos/dirs del servidor y cliente (no versionar)
+server.py
+client.py
+server_storage/
+client_storage/
+
+# Configuración local del editor
+.vscode/
+
+
+# Variables de entorno locales
+.env
