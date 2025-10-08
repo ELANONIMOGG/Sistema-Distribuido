@@ -5,7 +5,7 @@ from typing import Optional
 
 STORAGE_DIR = os.path.join(os.path.dirname(__file__), "server_storage")
 DB_PATH = os.path.join(os.path.dirname(__file__), "files.db")
-API_KEY = "devkey"  # change in production
+API_KEY = "devkey"
 
 app = FastAPI(title="Mini Distributed File Server")
 

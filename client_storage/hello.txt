@@ -1,0 +1,1 @@
+Hola Miguel! Este es un archivo de prueba para el sistema de archivos distribuido.

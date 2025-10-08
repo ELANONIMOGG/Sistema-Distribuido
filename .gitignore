@@ -11,8 +11,7 @@ __pycache__/
 # Archivos/dirs del servidor y cliente (no versionar)
 server.py
 client.py
-server_storage/
-client_storage/
+
 
 # Configuración local del editor
 .vscode/

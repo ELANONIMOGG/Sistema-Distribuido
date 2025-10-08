@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import requests, os, argparse, sys, time
+import subprocess 
 
 API_KEY = "devkey"
 DEFAULT_BASE = "http://localhost:8000"
@@ -33,14 +34,12 @@ def download_file(base, filename, dest_dir):
     print("Downloaded:", dest)
 
 def sync(base, local_dir):
-    # Upload local files not present on server; download server files missing locally
     r = requests.get(f"{base}/files", headers={"X-API-KEY": API_KEY})
     r.raise_for_status()
     server_files = {f["filename"] for f in r.json()}
     local_files = {f for f in os.listdir(local_dir) if os.path.isfile(os.path.join(local_dir, f))}
-    # Upload local-only
     to_upload = local_files - server_files
-    to_download = server_files - local_files
+    to_download = server_files - local_files 
     for f in to_upload:
         print("Uploading", f)
         upload_file(base, os.path.join(local_dir, f))
@@ -49,9 +48,23 @@ def sync(base, local_dir):
         download_file(base, f, local_dir)
     print("Sync complete.")
 
+def delete_file(base, filename):
+    r = requests.delete(f"{base}/delete/{filename}", headers={"X-API-KEY": API_KEY})
+    if r.status_code == 404:
+        print("File not found on server")
+        return
+    elif r.status_code == 403:
+        print("Forbidden: Invalid API key")
+        return
+    elif r.status_code == 202:
+        print("File deleted on server")
+        return
+    r.raise_for_status()
+    print("Deleted:", filename)
+
 def main():
     parser = argparse.ArgumentParser(description="Client for Mini Distributed File Server")
-    parser.add_argument("command", choices=["list","upload","download","sync"])
+    parser.add_argument("command", choices=["list","upload","download","sync, delete"])
     parser.add_argument("--base", default=DEFAULT_BASE, help="Server base URL")
     parser.add_argument("--path", help="Path for upload or local directory for sync/download")
     parser.add_argument("--filename", help="Filename for download")
@@ -73,6 +86,12 @@ def main():
             print("Need --path (local dir to sync)")
             sys.exit(1)
         sync(args.base, args.path)
+    elif args.command == "delete":
+        if not args.filename:
+            print("Need --filename to delete")
+            sys.exit(1)
+        delete_file(args.base, args.filename)
+
 
 if __name__ == "__main__":
     main()
