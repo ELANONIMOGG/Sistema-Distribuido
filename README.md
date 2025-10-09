@@ -21,7 +21,7 @@ Una implementación mínima y educativa de un sistema de intercambio de archivos
 - Python 3.8 o superior
 - Paquetes: FastAPI, uvicorn, requests, python-multipart (para subidas multipart)
 
-Si existe `requirements.txt`, instálalo; si no, las dependencias mínimas pueden instalarse así (PowerShell):
+
 
 ```powershell
 
