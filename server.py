@@ -83,3 +83,4 @@ def delete_file(filename: str, x_api_key: Optional[str] = Header(None)):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+

@@ -1,5 +1,3 @@
-![Banner](https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=8a0f2a0e7d2ab0b7b5a0f8b5c6d6e4a7)
-
 # Sistema de Archivos Distribuido — Mini proyecto (Python)
 
 [![Estado](https://img.shields.io/badge/status-experimental-yellow.svg)](https://github.com)
@@ -26,20 +24,25 @@ Una implementación mínima y educativa de un sistema de intercambio de archivos
 Si existe `requirements.txt`, instálalo; si no, las dependencias mínimas pueden instalarse así (PowerShell):
 
 ```powershell
+
 # Crear y activar virtualenv (PowerShell)
+
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install --upgrade pip
-pip install fastapi uvicorn requests python-multipart
+pip install -r requirements.txt
+
 ```
 
 En macOS/Linux:
 
 ```bash
+
 python -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
-pip install fastapi uvicorn requests python-multipart
+pip install -r requirements.txt
+
 ```
 
 ---

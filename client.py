@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import requests, os, argparse, sys, time
-import subprocess 
+import subprocess
 
 API_KEY = "devkey"
 DEFAULT_BASE = "http://localhost:8000"
@@ -53,10 +53,10 @@ def delete_file(base, filename):
     if r.status_code == 404:
         print("File not found on server")
         return
-    elif r.status_code == 403:
-        print("Forbidden: Invalid API key")
+    elif r.status_code == 401:
+        print("Unauthorized: Invalid API key")
         return
-    elif r.status_code == 202:
+    elif r.status_code == 200:
         print("File deleted on server")
         return
     r.raise_for_status()
@@ -64,7 +64,7 @@ def delete_file(base, filename):
 
 def main():
     parser = argparse.ArgumentParser(description="Client for Mini Distributed File Server")
-    parser.add_argument("command", choices=["list","upload","download","sync, delete"])
+    parser.add_argument("command", choices=["list","upload","download","sync","delete"])
     parser.add_argument("--base", default=DEFAULT_BASE, help="Server base URL")
     parser.add_argument("--path", help="Path for upload or local directory for sync/download")
     parser.add_argument("--filename", help="Filename for download")
