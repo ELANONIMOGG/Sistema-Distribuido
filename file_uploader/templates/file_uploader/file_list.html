@@ -1,0 +1,211 @@
+{% extends 'file_uploader/base.html' %}
+
+{% block title %}Mis Archivos - Sistema Distribuido{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="display-5 fw-bold text-primary">
+                    <i class="bi bi-files me-3"></i>
+                    Mis Archivos
+                </h1>
+                <p class="lead text-muted mb-0">Gestiona tus archivos en el sistema distribuido</p>
+            </div>
+            <div>
+                <a href="{% url 'file_uploader:index' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Subir Nuevo Archivo
+                </a>
+                <button class="btn btn-outline-secondary ms-2" onclick="refreshFiles()">
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    Actualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Files Grid -->
+        {% if files %}
+            <div class="row">
+                {% for file in files %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100 file-card">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <!-- File icon based on extension -->
+                                    {% if '.pdf' in file.filename %}
+                                        <i class="bi bi-file-pdf text-danger" style="font-size: 3rem;"></i>
+                                    {% elif '.doc' in file.filename or '.docx' in file.filename %}
+                                        <i class="bi bi-file-word text-primary" style="font-size: 3rem;"></i>
+                                    {% elif '.xls' in file.filename or '.xlsx' in file.filename %}
+                                        <i class="bi bi-file-excel text-success" style="font-size: 3rem;"></i>
+                                    {% elif '.ppt' in file.filename or '.pptx' in file.filename %}
+                                        <i class="bi bi-file-ppt text-warning" style="font-size: 3rem;"></i>
+                                    {% elif '.jpg' in file.filename or '.jpeg' in file.filename or '.png' in file.filename or '.gif' in file.filename %}
+                                        <i class="bi bi-file-image text-info" style="font-size: 3rem;"></i>
+                                    {% elif '.mp4' in file.filename or '.avi' in file.filename or '.mov' in file.filename %}
+                                        <i class="bi bi-file-play text-dark" style="font-size: 3rem;"></i>
+                                    {% elif '.mp3' in file.filename or '.wav' in file.filename %}
+                                        <i class="bi bi-file-music text-purple" style="font-size: 3rem;"></i>
+                                    {% elif '.zip' in file.filename or '.rar' in file.filename %}
+                                        <i class="bi bi-file-zip text-secondary" style="font-size: 3rem;"></i>
+                                    {% elif '.txt' in file.filename %}
+                                        <i class="bi bi-file-text text-muted" style="font-size: 3rem;"></i>
+                                    {% else %}
+                                        <i class="bi bi-file-earmark text-secondary" style="font-size: 3rem;"></i>
+                                    {% endif %}
+                                </div>
+                                
+                                <h6 class="card-title text-center fw-bold">{{ file.filename }}</h6>
+                                
+                                <div class="text-center text-muted small mb-3">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    Subido: {{ file.uploaded_at|date:"d/m/Y H:i" }}
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'file_uploader:download' file.filename %}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-download me-1"></i>
+                                        Descargar
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-outline-danger btn-sm" 
+                                            onclick="confirmDelete('{{ file.filename }}')">
+                                        <i class="bi bi-trash me-1"></i>
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Statistics -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <i class="bi bi-files" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2">{{ files|length }}</h4>
+                            <p class="mb-0">Archivo{{ files|length|pluralize }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <i class="bi bi-hdd" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2">Activo</h4>
+                            <p class="mb-0">Servidor</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <i class="bi bi-shield-check" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2">Seguro</h4>
+                            <p class="mb-0">Sistema</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Empty state -->
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-folder text-muted" style="font-size: 5rem;"></i>
+                </div>
+                <h3 class="text-muted mb-3">No hay archivos</h3>
+                <p class="lead text-muted mb-4">
+                    Aún no has subido ningún archivo al sistema.
+                </p>
+                <a href="{% url 'file_uploader:index' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-cloud-upload me-2"></i>
+                    Subir mi Primer Archivo
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                    Confirmar eliminación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres eliminar el archivo <strong id="deleteFileName"></strong>?</p>
+                <p class="text-danger small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Esta acción no se puede deshacer.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>
+                        Eliminar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmDelete(filename) {
+        document.getElementById('deleteFileName').textContent = filename;
+        document.getElementById('deleteForm').action = `/delete/${filename}/`;
+        
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    }
+
+    function refreshFiles() {
+        location.reload();
+    }
+
+    // Add hover effects to file cards
+    document.querySelectorAll('.file-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+            this.style.transition = 'all 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+        });
+    });
+</script>
+
+<style>
+    .file-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 12px;
+    }
+    
+    .text-purple {
+        color: #6f42c1 !important;
+    }
+</style>
+{% endblock %}
